@@ -17,7 +17,7 @@ export const Home: React.FC<{
                         className="h-20 w-20 rounded"
                         alt="SplitWithAMY logo"
                     />
-                    <h1 className="text-xl font-bold">
+                    <h1 className="text-l font-bold">
                         Welcome to SplitWithAMY
                     </h1>
                 </div>
