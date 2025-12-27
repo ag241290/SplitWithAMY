@@ -13,7 +13,7 @@ export const Home: React.FC<{
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <img
-                        src="/images/SplitWithAMY_Logo.png"
+                        src="/logo.png"
                         className="h-20 w-20 rounded"
                         alt="SplitWithAMY logo"
                     />

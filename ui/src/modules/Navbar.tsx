@@ -14,7 +14,7 @@ export const Navbar: React.FC<{
       <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/')} className="flex items-center gap-3">
-            <img src="/images/SplitWithAMY_Logo.png" alt="SplitWithAMY" className="h-20 w-20 rounded" />
+            <img src="/logo.png" alt="SplitWithAMY" className="h-20 w-20 rounded" />
           </button>
         </div>
         <div className="flex items-center gap-3">
