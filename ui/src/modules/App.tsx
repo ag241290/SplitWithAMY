@@ -93,7 +93,7 @@ export const App: React.FC = () => {
       </main>
 
       <footer className="mt-auto bg-green-600 text-white">
-        <div className="mx-auto max-w-5xl px-4 py-4 text-sm flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <div className="mx-auto max-w-5xl px-4 py-4 text-sm flex items-center justify-center text-center">
           <span>
             App Developed by -{' '}
             <a className="underline" href="https://wa.me/7276319578" target="_blank" rel="noopener noreferrer">Amit Gandhi</a>
