@@ -1,6 +1,8 @@
 import React from 'react'
 
-export const Modal: React.FC<{ open: boolean; title?: string; onClose: () => void }> = ({ open, title, onClose, children }) => {
+type ModalProps = React.PropsWithChildren<{ open: boolean; title?: string; onClose: () => void }>
+
+export const Modal: React.FC<ModalProps> = ({ open, title, onClose, children }) => {
   if (!open) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">

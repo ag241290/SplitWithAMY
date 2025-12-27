@@ -9,8 +9,8 @@ import { AdminPage } from '../pages/AdminPage'
 import { Home } from '../pages/Home'
 import { TrackerPage } from '../pages/Tracker'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
+const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL as string | undefined
+const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY as string | undefined
 
 function makeClient(headers?: Record<string, string>): SupabaseClient {
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -94,8 +94,10 @@ export const App: React.FC = () => {
 
       <footer className="mt-auto bg-green-600 text-white">
         <div className="mx-auto max-w-5xl px-4 py-4 text-sm flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <span>App Developed by - <space> </space>
-                      <a className="underline" href="https://wa.me/7276319578" target="_blank" rel="noopener noreferrer">Amit Gandhi</a></span>
+          <span>
+            App Developed by -{' '}
+            <a className="underline" href="https://wa.me/7276319578" target="_blank" rel="noopener noreferrer">Amit Gandhi</a>
+          </span>
         </div>
       </footer>
 

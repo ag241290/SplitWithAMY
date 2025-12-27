@@ -1,7 +1,14 @@
 import React from 'react'
 import { Button } from './ui/Button'
 import { useNavigate } from 'react-router-dom'
-import logo from '../public/images/SplitWithAMY_logo.png'
+// Prefer bundler import, fallback to public path
+let logoPath: string
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  logoPath = require('../public/images/SplitWithAMY_Logo.png')
+} catch {
+  logoPath = '/images/SplitWithAMY_Logo.png'
+}
 
 export const Navbar: React.FC<{
   adminLoggedIn: boolean
@@ -15,7 +22,7 @@ export const Navbar: React.FC<{
       <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/')} className="flex items-center gap-3">
-            <img src={logo} alt="SplitWithAMY" className="h-20 w-20 rounded" />
+            <img src={logoPath} alt="SplitWithAMY" className="h-20 w-20 rounded" />
           </button>
         </div>
         <div className="flex items-center gap-3">
