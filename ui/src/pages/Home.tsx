@@ -17,7 +17,7 @@ export const Home: React.FC<{
                         className="h-20 w-20 rounded"
                         alt="SplitWithAMY logo"
                     />
-                    <h1 className="text-2xl font-bold">
+                    <h1 className="text-xl font-bold">
                         Welcome to SplitWithAMY
                     </h1>
                 </div>
@@ -37,7 +37,7 @@ export const Home: React.FC<{
                 </p>
                 <div className="mt-10">
                     <p className="text-sm text-gray-600">
-                        Open existing tracker project or login as admin to manage trackers.
+                        Open existing tracker or login as admin to manage trackers.
                     </p>
                 </div>
             </div>
