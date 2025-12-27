@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom'
 let logoPath: string
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  logoPath = require('../public/images/SplitWithAMY_Logo.png')
+    logoPath = require('../src/public/public/images/SplitWithAMY_Logo.png')
 } catch {
-  logoPath = '/images/SplitWithAMY_Logo.png'
+    logoPath = '/src/public/images/SplitWithAMY_Logo.png'
 }
 
 export const Navbar: React.FC<{
