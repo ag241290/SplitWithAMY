@@ -429,7 +429,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
                     <span>{s.amount.toFixed(2)}</span>
                   </div>
                 ))
-              }
+              )}
             </div>
           </div>
         </div>
@@ -497,7 +497,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
                     <span className="text-right">{Number(e.amount).toFixed(2)}</span>
                   </div>
                 ))
-              }
+              )}
             </div>
           </div>
           <div>
