@@ -261,7 +261,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
         <CardHeader>
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
-              <h2 className="text-m font-semibold">Tracker: {trackerName || trackerId}</h2>
+              <h2 className="text-sm font-semibold">Tracker: {trackerName || trackerId}</h2>
               <button className="inline-flex items-center gap-1 rounded-full bg-yellow-500 text-white px-2 py-1 text-xs shadow hover:bg-yellow-600" onClick={openAudit}>
                 <span>★</span>
                 <span>Audit</span>
