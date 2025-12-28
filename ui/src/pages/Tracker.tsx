@@ -332,7 +332,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div>
-                <label className="text-sm font-medium text-gray-800 dark:text-gray-200">Paid by *</label>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-200">Paid by *</label>
                 <select className="w-full rounded border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={paidBy} onChange={(e) => setPaidBy(e.target.value)}>
                   <option value="" disabled>Select payer</option>
                   {participants.map((p) => (
@@ -340,13 +340,13 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
                   ))}
                 </select>
               </div>
-              <Input label="Description *" labelClassName="text-sm font-medium text-gray-800 dark:text-gray-200" value={desc} onChange={(e) => setDesc(e.target.value)} />
-              <Input label="Amount *" labelClassName="text-sm font-medium text-gray-800 dark:text-gray-200" value={amount} onChange={(e) => setAmount(e.target.value)} />
+              <Input label="Description *" labelClassName="text-sm font-medium text-gray-600 dark:text-gray-200" value={desc} onChange={(e) => setDesc(e.target.value)} />
+              <Input label="Amount *" labelClassName="text-sm font-medium text-gray-600 dark:text-gray-200" value={amount} onChange={(e) => setAmount(e.target.value)} />
             </div>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div>
-                <label className="text-sm font-medium text-gray-800 dark:text-gray-200">Split By *</label>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-200">Split By *</label>
                 <select className="w-full rounded border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={splitBy} onChange={(e) => handleSplitChange(e.target.value as any)}>
                   <option value="blank">Blank</option>
                   <option value="equal">Add expense (equal split)</option>
