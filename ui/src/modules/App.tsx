@@ -21,7 +21,7 @@ function makeClient(headers?: Record<string, string>): SupabaseClient {
 
 export const App: React.FC = () => {
   const [adminToken, setAdminToken] = useState<string | null>(null)
-  const [trackerToken, setTrackerToken] = useState<string | null>(null)
+  const [trackerToken, setTrackerToken] = useState<string | null>(() => localStorage.getItem('trackerToken'))
   const [envOk, setEnvOk] = useState<boolean>(!!(supabaseUrl && supabaseAnonKey))
   const [trackers, setTrackers] = useState<any[]>([])
   const [openAdminLogin, setOpenAdminLogin] = useState(false)
@@ -33,6 +33,11 @@ export const App: React.FC = () => {
   useEffect(() => {
     console.log('App mounted. Env ok?', envOk, { supabaseUrl, hasKey: !!supabaseAnonKey })
   }, [envOk])
+
+  useEffect(() => {
+    if (trackerToken) localStorage.setItem('trackerToken', trackerToken)
+    else localStorage.removeItem('trackerToken')
+  }, [trackerToken])
 
   const adminClient = useMemo(() => (adminToken ? makeClient({ 'x-admin-token': adminToken }) : makeClient()), [adminToken])
   const trackerClient = useMemo(() => (trackerToken ? makeClient({ 'x-tracker-token': trackerToken }) : makeClient()), [trackerToken])
@@ -88,7 +93,7 @@ export const App: React.FC = () => {
             <AdminPage client={adminClient} onTrackerCreated={(t) => setTrackers((prev) => [t, ...prev])} />
           } />
 
-          <Route path="/tracker/:slug" element={<TrackerRoute client={trackerClient} onToken={(t) => setTrackerToken(t)} />} />
+          <Route path="/tracker/:slug" element={<TrackerRoute client={trackerClient} />} />
         </Routes>
       </main>
 
@@ -112,7 +117,8 @@ export const App: React.FC = () => {
         open={openTrackerLogin.open}
         tracker={openTrackerLogin.tracker}
         onClose={() => setOpenTrackerLogin({ open: false })}
-        onLoggedIn={async (_token) => {
+        onLoggedIn={async (token) => {
+          setTrackerToken(token)
           setOpenTrackerLogin({ open: false })
           navigate(`/tracker/${encodeURIComponent(openTrackerLogin.tracker!.name)}`)
         }}
@@ -177,7 +183,7 @@ const TrackerLoginModal: React.FC<{ open: boolean; tracker?: { id: string; name:
   )
 }
 
-const TrackerRoute: React.FC<{ client: SupabaseClient; onToken: (t: string) => void }> = ({ client, onToken }) => {
+const TrackerRoute: React.FC<{ client: SupabaseClient }> = ({ client }) => {
   const { slug } = useParams()
   const prefill = typeof slug === 'string' ? slug : ''
   return <TrackerPage client={client} trackerIdInitial={prefill} />

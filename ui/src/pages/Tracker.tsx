@@ -20,6 +20,11 @@ function isUuid(v: string): boolean {
 }
 
 export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: string }> = ({ client, trackerIdInitial }) => {
+  useEffect(() => {
+    // Ensure page starts at top when opened
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }, [])
+
   const [trackerId, setTrackerId] = useState(trackerIdInitial ?? '')
   const [trackerName, setTrackerName] = useState<string>('')
   const [log, setLog] = useState('')
@@ -30,6 +35,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
   const [paidBy, setPaidBy] = useState('')
 
   const [splitBy, setSplitBy] = useState<'blank' | 'equal' | 'custom'>('blank')
+  const [showCustomModal, setShowCustomModal] = useState(false)
   const [customSplits, setCustomSplits] = useState<Record<string, string>>({})
   const [balances, setBalances] = useState<any[] | null>(null)
   const [showBalanceModal, setShowBalanceModal] = useState(false)
@@ -149,6 +155,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
     if (splitErr) return setLog('Insert splits error: ' + splitErr.message)
 
     setLog('Expense and custom splits added: ' + (expense as any).id)
+    setShowCustomModal(false)
   }
 
   async function showBalances() {
@@ -166,6 +173,11 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
 
   function handleOpenPayment() {
     setShowPaymentModal(true)
+  }
+
+  function handleSplitChange(value: 'blank' | 'equal' | 'custom') {
+    setSplitBy(value)
+    if (value === 'custom') setShowCustomModal(true)
   }
 
   function handleSubmitPayment() {
@@ -261,7 +273,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
         <CardHeader>
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
-              <h2 className="text-s font-semibold">{trackerName || trackerId}</h2>
+                          <h2 className="text-sm font-semibold">{trackerName}</h2>
               <button className="inline-flex items-center gap-1 rounded-full bg-yellow-500 text-white px-2 py-1 text-xs shadow hover:bg-yellow-600" onClick={openAudit}>
                 <span>★</span>
                 <span>Audit</span>
@@ -277,12 +289,12 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
               <button className="text-sm text-brand hover:underline" onClick={handleOpenPayment}>Add Payment</button>
             </div>
 
-            <hr className="border-gray-200" />
+            <hr className="border-gray-200 dark:border-gray-700" />
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">Paid by *</label>
-                <select className="w-full rounded border border-gray-300 px-3 py-2 text-sm" value={paidBy} onChange={(e) => setPaidBy(e.target.value)}>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid by *</label>
+                <select className="w-full rounded border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={paidBy} onChange={(e) => setPaidBy(e.target.value)}>
                   <option value="" disabled>Select payer</option>
                   {participants.map((p) => (
                     <option key={p.id} value={p.id}>{p.name}</option>
@@ -295,8 +307,8 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">Split By *</label>
-                <select className="w-full rounded border border-gray-300 px-3 py-2 text-sm" value={splitBy} onChange={(e) => setSplitBy(e.target.value as any)}>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Split By *</label>
+                <select className="w-full rounded border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={splitBy} onChange={(e) => handleSplitChange(e.target.value as any)}>
                   <option value="blank">Blank</option>
                   <option value="equal">Add expense (equal split)</option>
                   <option value="custom">Add expense (custom split)</option>
@@ -309,28 +321,23 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
                 <h3 className="text-sm font-semibold">Equal split</h3>
                 <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                   {participants.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between rounded border border-gray-200 px-3 py-2 text-sm">
+                    <div key={p.id} className="flex items-center justify-between rounded border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm">
                       <span>{p.name}</span>
                       <span>{equalShare.toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
-                <div className="text-xs text-gray-600">Each participant pays: {equalShare.toFixed(2)}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Each participant pays: {equalShare.toFixed(2)}</div>
               </div>
             )}
 
             {splitBy === 'custom' && (
               <div className="space-y-2">
-                <h3 className="text-sm font-semibold">Custom split *</h3>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  {participants.map((p) => (
-                    <div key={p.id} className="flex items-center gap-3">
-                      <span className="w-40 text-sm text-gray-700">{p.name}</span>
-                      <Input label="Amount *" value={customSplits[p.id] ?? ''} onChange={(e) => setCustomSplitAmount(p.id, e.target.value)} />
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold">Custom split *</h3>
+                  <Button variant="secondary" onClick={() => setShowCustomModal(true)}>Open</Button>
                 </div>
-                <div className="text-xs text-gray-600">Total custom split: {totalCustomSplit.toFixed(2)}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Enter amounts for each participant in the modal.</div>
               </div>
             )}
 
@@ -338,7 +345,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
               <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
             </div>
 
-            <pre className="mt-3 whitespace-pre-wrap rounded bg-gray-50 p-3 text-xs text-gray-700">{log}</pre>
+            <pre className="mt-3 whitespace-pre-wrap rounded bg-gray-50 dark:bg-gray-800 p-3 text-xs text-gray-700 dark:text-gray-200">{log}</pre>
           </div>
         </CardBody>
       </Card>
@@ -414,7 +421,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
             <h4 className="font-semibold">Who pays whom</h4>
             <div className="space-y-1">
               {settlements.length === 0 ? (
-                <div className="text-gray-600">No settlements needed.</div>
+                <div className="text-gray-600 dark:text-gray-400">No settlements needed.</div>
               ) : (
                 settlements.map((s, idx) => (
                   <div key={idx} className="flex justify-between">
@@ -432,8 +439,8 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
         <div className="space-y-3 text-sm">
           <Input label="Amount *" value={paymentAmount} onChange={(e) => setPaymentAmount(e.target.value)} />
           <div>
-            <label className="text-sm font-medium text-gray-700">Paid By *</label>
-            <select className="w-full rounded border border-gray-300 px-3 py-2 text-sm" value={paymentBy} onChange={(e) => setPaymentBy(e.target.value)}>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid By *</label>
+            <select className="w-full rounded border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={paymentBy} onChange={(e) => setPaymentBy(e.target.value)}>
               <option value="" disabled>Select payer</option>
               {participants.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
@@ -441,8 +448,8 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
             </select>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">Paid To *</label>
-            <select className="w-full rounded border border-gray-300 px-3 py-2 text-sm" value={paymentTo} onChange={(e) => setPaymentTo(e.target.value)}>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid To *</label>
+            <select className="w-full rounded border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={paymentTo} onChange={(e) => setPaymentTo(e.target.value)}>
               <option value="" disabled>Select payee</option>
               {participants.filter((p) => p.id !== paymentBy).map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
@@ -456,13 +463,31 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
         </div>
       </Modal>
 
+      <Modal open={showCustomModal} title="Custom Split" onClose={() => setShowCustomModal(false)}>
+        <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {participants.map((p) => (
+              <div key={p.id} className="flex items-center gap-3">
+                <span className="w-32 text-sm text-gray-700 dark:text-gray-300">{p.name}</span>
+                <Input label="Amount *" value={customSplits[p.id] ?? ''} onChange={(e) => setCustomSplitAmount(p.id, e.target.value)} />
+              </div>
+            ))}
+          </div>
+          <div className="text-xs text-gray-600 dark:text-gray-400">Total custom split: {totalCustomSplit.toFixed(2)}</div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" onClick={() => setShowCustomModal(false)}>Close</Button>
+            <Button onClick={addExpenseCustomSplit}>Submit</Button>
+          </div>
+        </div>
+      </Modal>
+
       <Modal open={showAuditModal} title="Audit" onClose={() => setShowAuditModal(false)}>
         <div className="space-y-4 text-sm">
           <div>
             <h4 className="font-semibold">Expense entries</h4>
             <div className="space-y-1">
               {auditExpenses.length === 0 ? (
-                <div className="text-gray-600">No expenses yet.</div>
+                <div className="text-gray-600 dark:text-gray-400">No expenses yet.</div>
               ) : (
                 auditExpenses.map((e, idx) => (
                   <div key={idx} className="grid grid-cols-4 gap-2">
@@ -479,7 +504,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
             <h4 className="font-semibold">Payment entries</h4>
             <div className="space-y-1">
               {paymentsLog.length === 0 ? (
-                <div className="text-gray-600">No payments logged.</div>
+                <div className="text-gray-600 dark:text-gray-400">No payments logged.</div>
               ) : (
                 paymentsLog.map((p, idx) => (
                   <div key={idx} className="grid grid-cols-4 gap-2">
