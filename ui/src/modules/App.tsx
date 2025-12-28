@@ -61,6 +61,11 @@ export const App: React.FC = () => {
 
   const navigate = useNavigate()
 
+  // Ensure each navigation starts from top (mobile-friendly)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }, [location.pathname])
+
   return (
     <div className="min-h-screen flex flex-col">
       {!isHome && (

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { Card, CardBody, CardHeader } from '../modules/ui/Card'
 import { Input } from '../modules/ui/Input'
@@ -50,6 +50,23 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
   // Audit modal state
   const [showAuditModal, setShowAuditModal] = useState(false)
   const [auditExpenses, setAuditExpenses] = useState<{ description: string | null; amount: number; paid_by: string; created_at: string }[]>([])
+
+  // Header menu state
+  const [showHeaderMenu, setShowHeaderMenu] = useState(false)
+  const headerMenuRef = useRef<HTMLDivElement | null>(null)
+
+  // Close header menu on outside click
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (!headerMenuRef.current) return
+      const target = e.target as Node
+      if (!headerMenuRef.current.contains(target)) setShowHeaderMenu(false)
+    }
+    if (showHeaderMenu) {
+      document.addEventListener('mousedown', onDocClick)
+    }
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [showHeaderMenu])
 
   const totalCustomSplit = useMemo(() => Object.values(customSplits).reduce((sum, v) => sum + (Number(v) || 0), 0), [customSplits])
   const equalShare = useMemo(() => {
@@ -271,29 +288,51 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-                          <h2 className="text-sm font-semibold">{trackerName}</h2>
-              <button className="inline-flex items-center gap-1 rounded-full bg-yellow-500 text-white px-2 py-1 text-xs shadow hover:bg-yellow-600" onClick={openAudit}>
-                <span>★</span>
-                <span>Audit</span>
-              </button>
+          {/* Gradient border glow wrapper */}
+          <div className="relative rounded-lg p-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+            {/* Inner tile masks gradient fill to show only border */}
+            <div className="rounded-lg p-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm">
+              <div className="w-full flex items-center justify-between gap-2">
+                <h2 className="text-base sm:text-lg font-bold tracking-tight truncate max-w-[70%] text-gray-600">{trackerName}</h2>
+                <div className="relative" ref={headerMenuRef}>
+                  <button
+                    aria-label="Menu"
+                    className="inline-flex items-center justify-center rounded-md bg-white/90 text-gray-900 w-8 h-8 shadow hover:bg-white"
+                    onClick={() => setShowHeaderMenu((v) => !v)}
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                  {showHeaderMenu && (
+                    <div className="absolute right-0 mt-2 w-44 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-lg z-10">
+                      <ul className="py-1 text-sm">
+                        <li>
+                          <button className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800" onClick={() => { setShowHeaderMenu(false); openAudit() }}>Audit</button>
+                        </li>
+                        <li>
+                          <button className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800" onClick={() => { setShowHeaderMenu(false); handleOpenPayment() }}>Add Payment</button>
+                        </li>
+                        <li>
+                          <button className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800" onClick={() => { setShowHeaderMenu(false); showBalances() }}>Show Balance</button>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-            <Button onClick={showBalances} className="text-xs px-2 py-1">Show Balance</Button>
           </div>
         </CardHeader>
         <CardBody>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold">Expense Entry</h3>
-              <button className="text-sm text-brand hover:underline" onClick={handleOpenPayment}>Add Payment</button>
+              <h3 className="text-sm font-semibold text-green-600">Expense Entry</h3>
             </div>
-
-            <hr className="border-gray-200 dark:border-gray-700" />
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid by *</label>
+                <label className="text-sm font-medium text-gray-800 dark:text-gray-200">Paid by *</label>
                 <select className="w-full rounded border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={paidBy} onChange={(e) => setPaidBy(e.target.value)}>
                   <option value="" disabled>Select payer</option>
                   {participants.map((p) => (
@@ -301,13 +340,13 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
                   ))}
                 </select>
               </div>
-              <Input label="Description *" value={desc} onChange={(e) => setDesc(e.target.value)} />
-              <Input label="Amount *" value={amount} onChange={(e) => setAmount(e.target.value)} />
+              <Input label="Description *" labelClassName="text-sm font-medium text-gray-800 dark:text-gray-200" value={desc} onChange={(e) => setDesc(e.target.value)} />
+              <Input label="Amount *" labelClassName="text-sm font-medium text-gray-800 dark:text-gray-200" value={amount} onChange={(e) => setAmount(e.target.value)} />
             </div>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Split By *</label>
+                <label className="text-sm font-medium text-gray-800 dark:text-gray-200">Split By *</label>
                 <select className="w-full rounded border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" value={splitBy} onChange={(e) => handleSplitChange(e.target.value as any)}>
                   <option value="blank">Blank</option>
                   <option value="equal">Add expense (equal split)</option>
@@ -342,7 +381,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
             )}
 
             <div className="flex justify-start">
-              <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
+              <Button variant="secondary" onClick={handleSubmit} className="transition hover:scale-[1.02] bg-green-600 text-white hover:bg-green-700 focus:ring-green-500">Submit</Button>
             </div>
 
             <pre className="mt-3 whitespace-pre-wrap rounded bg-gray-50 dark:bg-gray-800 p-3 text-xs text-gray-700 dark:text-gray-200">{log}</pre>
@@ -458,7 +497,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setShowPaymentModal(false)}>Cancel</Button>
-            <Button onClick={handleSubmitPayment}>Submit</Button>
+            <Button onClick={handleSubmitPayment} className="transition hover:scale-[1.02] bg-green-600 text-white hover:bg-green-700 focus:ring-green-500">Submit</Button>
           </div>
         </div>
       </Modal>
@@ -469,14 +508,18 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
             {participants.map((p) => (
               <div key={p.id} className="flex items-center gap-3">
                 <span className="w-32 text-sm text-gray-700 dark:text-gray-300">{p.name}</span>
-                <Input label="Amount *" value={customSplits[p.id] ?? ''} onChange={(e) => setCustomSplitAmount(p.id, e.target.value)} />
+                <Input label="Amount *"
+                  value={customSplits[p.id] ?? ''}
+                  onChange={(e) => setCustomSplitAmount(p.id, e.target.value)}
+                  labelClassName="text-sm font-semibold text-gray-800 dark:text-gray-200"
+                />
               </div>
             ))}
           </div>
           <div className="text-xs text-gray-600 dark:text-gray-400">Total custom split: {totalCustomSplit.toFixed(2)}</div>
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="secondary" onClick={() => setShowCustomModal(false)}>Close</Button>
-            <Button onClick={addExpenseCustomSplit}>Submit</Button>
+            <Button onClick={addExpenseCustomSplit} className="transition hover:scale-[1.02] bg-green-600 text-white hover:bg-green-700 focus:ring-green-500">Submit</Button>
           </div>
         </div>
       </Modal>
