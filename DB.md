@@ -158,7 +158,7 @@ declare
 begin
   select * into v_admin
   from admin_users
-  where username = p_username
+  where lower(username) = lower(p_username)
     and password = p_password;
 
   if not found then
@@ -186,7 +186,7 @@ begin
   select * into v_cred
   from tracker_credentials
   where tracker_id = p_tracker_id
-    and username = p_username
+    and lower(username) = lower(p_username)
     and password = p_password;
 
   if not found then

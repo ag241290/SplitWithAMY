@@ -135,7 +135,7 @@ const AdminLoginModal: React.FC<{ open: boolean; onClose: () => void; onLoggedIn
 
   async function handleLogin() {
     setMsg('Logging in admin...')
-    const { data, error } = await baseClient.rpc('admin_login', { p_username: username, p_password: password })
+    const { data, error } = await baseClient.rpc('admin_login', { p_username: username.toLowerCase(), p_password: password })
     if (error) return setMsg('Admin login error: ' + error.message)
     onLoggedIn(data as string)
   }
@@ -163,7 +163,7 @@ const TrackerLoginModal: React.FC<{ open: boolean; tracker?: { id: string; name:
   async function handleLogin() {
     if (!tracker) return
     setMsg('Logging in tracker...')
-    const { data, error } = await baseClient.rpc('tracker_login', { p_tracker_id: tracker.id, p_username: username, p_password: password })
+    const { data, error } = await baseClient.rpc('tracker_login', { p_tracker_id: tracker.id, p_username: username.toLowerCase(), p_password: password })
     if (error) return setMsg('Tracker login error: ' + error.message)
     onLoggedIn(data as string)
   }

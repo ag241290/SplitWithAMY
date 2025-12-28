@@ -279,7 +279,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
                 <span>Audit</span>
               </button>
             </div>
-            <Button onClick={showBalances}>Show Balance</Button>
+            <Button onClick={showBalances} className="text-xs px-2 py-1">Show Balance</Button>
           </div>
         </CardHeader>
         <CardBody>
@@ -429,7 +429,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
                     <span>{s.amount.toFixed(2)}</span>
                   </div>
                 ))
-              )}
+              }
             </div>
           </div>
         </div>
@@ -497,7 +497,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
                     <span className="text-right">{Number(e.amount).toFixed(2)}</span>
                   </div>
                 ))
-              )}
+              }
             </div>
           </div>
           <div>
