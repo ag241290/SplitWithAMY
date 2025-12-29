@@ -4,9 +4,10 @@ import { Button } from '../modules/ui/Button'
 
 export const Home: React.FC<{
     trackers: { id: string; name: string; description?: string }[]
+    loading?: boolean
     onClickAdmin: () => void
     onSelectTracker: (t: { id: string; name: string }) => void
-}> = ({ trackers, onClickAdmin, onSelectTracker }) => {
+}> = ({ trackers, loading = false, onClickAdmin, onSelectTracker }) => {
     const features = [
         { t: 'Fast entry', d: 'Add expenses in seconds with equal or custom splits.', icon: (
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -66,7 +67,20 @@ export const Home: React.FC<{
                     <Button onClick={onClickAdmin} className="bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500">Admin</Button>
                 </div>
 
-                {trackers.length === 0 ? (
+                {loading ? (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {Array.from({ length: 3 }).map((_, idx) => (
+                            <Card key={idx}>
+                                <CardHeader>
+                                    <div className="h-5 w-1/3 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
+                                </CardHeader>
+                                <CardBody>
+                                    <div className="h-8 w-24 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
+                                </CardBody>
+                            </Card>
+                        ))}
+                    </div>
+                ) : trackers.length === 0 ? (
                     <Card>
                         <CardBody>
                             <div className="text-center py-12">

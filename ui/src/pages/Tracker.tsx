@@ -257,7 +257,7 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
     if (!balances) return [] as { from: string; to: string; amount: number }[]
     const creditors: { id: string; name: string; amount: number }[] = []
     const debtors: { id: string; name: string; amount: number }[] = []
-    for (const b of balances as any[]) {
+    for (const b of (balances as any[])) {
       const name = participants.find((p) => p.id === b.participant_id)?.name ?? b.participant_id
       const basePaid = Number(b.total_paid || 0)
       const deltaPaid = paymentsLog.reduce((sum, p) => {
@@ -293,11 +293,11 @@ export const TrackerPage: React.FC<{ client: SupabaseClient; trackerIdInitial?: 
             {/* Inner tile masks gradient fill to show only border */}
             <div className="rounded-lg p-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm">
               <div className="w-full flex items-center justify-between gap-2">
-                <h2 className="text-base sm:text-lg font-bold tracking-tight truncate max-w-[70%] text-gray-600">{trackerName}</h2>
+                <h2 className="text-base sm:text-lg font-bold tracking-tight truncate max-w-[70%] text-gray-600 dark:text-gray-200">{trackerName}</h2>
                 <div className="relative" ref={headerMenuRef}>
                   <button
                     aria-label="Menu"
-                    className="inline-flex items-center justify-center rounded-md bg-white/90 text-gray-900 w-8 h-8 shadow hover:bg-white"
+                    className="inline-flex items-center justify-center rounded-md bg-white/90 dark:bg-gray-800 dark:text-gray-100 w-8 h-8 shadow hover:bg-white dark:hover:bg-gray-700"
                     onClick={() => setShowHeaderMenu((v) => !v)}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

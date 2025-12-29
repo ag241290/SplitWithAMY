@@ -24,8 +24,23 @@ export const App: React.FC = () => {
   const [trackerToken, setTrackerToken] = useState<string | null>(() => localStorage.getItem('trackerToken'))
   const [envOk, setEnvOk] = useState<boolean>(!!(supabaseUrl && supabaseAnonKey))
   const [trackers, setTrackers] = useState<any[]>([])
+  const [trackersLoading, setTrackersLoading] = useState<boolean>(true)
   const [openAdminLogin, setOpenAdminLogin] = useState(false)
   const [openTrackerLogin, setOpenTrackerLogin] = useState<{ open: boolean; tracker?: { id: string; name: string } }>({ open: false })
+
+  // Auto theme detection using prefers-color-scheme
+  useEffect(() => {
+    const mql = window.matchMedia('(prefers-color-scheme: dark)')
+    const apply = () => {
+      if (mql.matches) document.documentElement.classList.add('dark')
+      else document.documentElement.classList.remove('dark')
+    }
+    apply()
+    try { mql.addEventListener('change', apply) } catch { mql.addListener(apply) }
+    return () => {
+      try { mql.removeEventListener('change', apply) } catch { mql.removeListener(apply) }
+    }
+  }, [])
 
   const location = useLocation()
   const isHome = location.pathname === '/'
@@ -44,15 +59,19 @@ export const App: React.FC = () => {
   const publicClient = useMemo(() => makeClient(), [])
 
   async function loadAdminTrackers() {
+    setTrackersLoading(true)
     const { data, error } = await adminClient.from('trackers').select('id,name,description')
-    if (error) return console.warn('Load trackers error:', error.message)
-    setTrackers(data as any[])
+    if (error) console.warn('Load trackers error:', error.message)
+    setTrackers((data as any[]) || [])
+    setTrackersLoading(false)
   }
 
   async function loadPublicTrackers() {
+    setTrackersLoading(true)
     const { data, error } = await publicClient.from('trackers').select('id,name,description')
-    if (error) return console.warn('Load public trackers error:', error.message)
-    setTrackers(data as any[])
+    if (error) console.warn('Load public trackers error:', error.message)
+    setTrackers((data as any[]) || [])
+    setTrackersLoading(false)
   }
 
   useEffect(() => {
@@ -67,7 +86,7 @@ export const App: React.FC = () => {
   }, [location.pathname])
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
       {!isHome && (
         <Navbar
           adminLoggedIn={!!adminToken}
@@ -77,7 +96,7 @@ export const App: React.FC = () => {
         />
       )}
 
-      <main className="mx-auto max-w-5xl px-4 py-6 space-y-6 flex-1">
+      <main className="mx-auto max-w-5xl px-4 py-6 space-y-6 flex-1 w-full">
         {!envOk && (
           <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             <strong className="font-semibold">Environment variables missing.</strong>
@@ -89,6 +108,7 @@ export const App: React.FC = () => {
           <Route path="/" element={
             <Home
               trackers={trackers}
+              loading={trackersLoading}
               onClickAdmin={() => setOpenAdminLogin(true)}
               onSelectTracker={(t) => setOpenTrackerLogin({ open: true, tracker: t })}
             />
