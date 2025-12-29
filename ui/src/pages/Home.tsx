@@ -63,7 +63,7 @@ export const Home: React.FC<{
             {/* Trackers header with Admin button on the right */}
             <div id="trackers" className="space-y-3">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold">Your trackers</h2>
+                    <h2 className="text-lg font-semibold">Browse Trackers</h2>
                     <Button onClick={onClickAdmin} className="bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500">Admin</Button>
                 </div>
 
